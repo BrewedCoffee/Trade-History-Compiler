@@ -105,50 +105,14 @@ void Transaction::print() {
     << std::endl;
 }
 
-
-////////////////////////////////////////////////////////////////////////////////
-// Definitions for the History class
-////////////////////////////////////////////////////////////////////////////////
-//
-//
-
+// HISTORY CLASS DEFINITIONS
 
 // Constructor
-// TASK 3
-//
-
 History::History() {
 	p_head = nullptr;
 }
 
 // Destructor
-// TASK 3
-//
-
-// LAB 9 COMMENTED OUT SEE BELOW
-/*
-History::~History() {
-	Transaction * p_temp {p_head};
-
-	//p_head = p_temp->get_next();
-	//std::cout << "debug 1" << std::endl;
-
-	if (p_head != nullptr) {
-		while (p_head != nullptr) {
-			//Transaction * p_temp {p_head};
-
-			p_head = p_temp->get_next();
-
-			//std::cout << "debug 2" << std::endl;
-			p_temp->set_next(nullptr);
-			delete p_temp;
-			p_temp = nullptr;
-
-			delete
-		}
-	}
-}
-*/
 
 History::~History()
 {
@@ -167,15 +131,12 @@ History::~History()
 }
 
 // read_transaction(...): Read the transaction history from file.
-// TASK 4
-//
 
 void History::read_history() {
 
 	ece150::open_file();
 
 	while (ece150::next_trans_entry()) {
-		//std::cout << "COUNT ONE" << std::endl;
 		Transaction * p_new = new Transaction (
 
 			ece150::get_trans_symbol(),
@@ -190,8 +151,6 @@ void History::read_history() {
 
 		this->insert(p_new);
 	}
-		//delete p_new;
-		//p_new = nullptr;
 
 	ece150::close_file();
 
@@ -199,13 +158,10 @@ void History::read_history() {
 
 
 // insert(...): Insert transaction into linked list.
-// TASK 5
-//
-
 void History::insert(Transaction *p_new_trans) {
 
 	if (p_head == nullptr) {
-		//Empty Case
+		//Empty case
 		p_head = p_new_trans;
 	}
 	else {
@@ -221,108 +177,97 @@ void History::insert(Transaction *p_new_trans) {
 	}
 }
 
-// sort_by_date(): Sort the linked list by trade date.
-// TASK 6
-//
+// sort_by_date(): Sort the linked list by trade date. Inefficient but simple sort method.
 
 void History::sort_by_date() {
 
-	//Step 1: Empty condition. Check if empty or one node, because then we're done.
+	// Check if list is empty or contains one node.
 	if (p_head == nullptr or p_head->get_next() == nullptr) {
 	}
 	else {
-		//Step 2: Create handling pointers:
+
+		// Create handling pointers:
 		Transaction * p_sorted {nullptr};
 		Transaction * p_temp2 {nullptr};
 		Transaction * p_temp1 {p_head};
 
-		//Step 3a: Move p_head to the second node
+		// 1a. Move p_head to the second node
 		p_head = p_head->get_next();
 
-		//Step 3b: Disconnect first node from p_head list
+		// 1b. Disconnect first node from p_head list
 		p_temp1->set_next(nullptr);
 
-		//Step 3c: Point p_sorted to first node
+		// 1c. Point p_sorted to first node
 		p_sorted = p_temp1;
 
-	//BIG LOOP
+	// Main loop for general case
 		while (p_head != nullptr) {
-		//	std::cout << "lets go one time" << p_head << p_head->get_trans_id() << std::endl;
 
-			//Step 4: Break off the next node.
+			// 2a: Break off the next node.
 			p_temp1 = p_head;
 			p_head = p_head->get_next();
 			p_temp1->set_next(nullptr);
 
-			//Step 5: Test whether it is case 1 or two
+			// 2b: Test whether that node goes to the head of the list or NOT.
 			if (*p_temp1 < *p_sorted) {
-				//Case 1, step a:
-				p_temp1->set_next(p_sorted);
 
-				//Case 1, step b: move p_sorted
+				// Node to head of list
+				p_temp1->set_next(p_sorted);
 				p_sorted = p_temp1;
 			}
+
 			else {
-				//Case 2, step a:
+				// Node NOT to head of list
 				p_temp2 = p_sorted;
 
+				// Find where the node should be sorted to
 				while ((p_temp2->get_next() != nullptr) && !(*p_temp1 < *(p_temp2->get_next()))) {
 					p_temp2 = p_temp2->get_next();
 				}
 
-				//Case 2, step b: Insert the new node
+				// Insert the new node
 				p_temp1->set_next(p_temp2->get_next());
 
 				p_temp2->set_next(p_temp1);
 			}
 		}
-		//END OF BIG LOOP
 
-		//Step 7 set p_head to p_sorted
 		p_head = p_sorted;
 
 	}
 }
 
 
-// update_acb_cgl(): Updates the ACB and CGL values.
-// TASK 7
-//
+// update_acb_cgl(): Updates the ACB, Share, ACB/Share, and CGL values.
 
 void History::update_acb_cgl() {
-	//for every transaction that year??? go to every transaction, if year = year, type=sell then...)
 
 		Transaction * p_temp {p_head};
-		double my_acb = 0, my_acbPshare = 0, my_shareB = 0, my_cgl = 0, prev_acbS = 0;
+		double my_acb = 0, my_acbS = 0, my_shareB = 0, my_cgl = 0, prev_acbS = 0;
 
-		//NOT p_temp->get_next() because then it would stop one short
 		while (p_temp != nullptr) {
 
 			//Buy calculations
 			if (p_temp->get_trans_type()) {
 
-				//std::cout << "Calculating ACB, Shares, ACB/Share, CGL" << std::endl;
-
 				my_acb += p_temp->get_amount();
 				my_shareB += p_temp->get_shares();
-				my_acbPshare = ( my_acb / my_shareB );
+				my_acbS = ( my_acb / my_shareB );
 
 				p_temp->set_acb(my_acb);
 				p_temp->set_share_balance(my_shareB);
-				p_temp->set_acb_per_share(my_acbPshare);
-
-				//useless call just to get it to save...
-				//compute_cgl(p_temp->get_year());
+				p_temp->set_acb_per_share(my_acbS);
 			}
+
 			//Sell calculations
 			else {
 				my_acb -= (p_temp->get_shares() * prev_acbS);
 				my_shareB -= p_temp->get_shares();
-				my_acbPshare = ( my_acb / my_shareB);
+				my_acbS = ( my_acb / my_shareB);
 
 				p_temp->set_acb(my_acb);
 				p_temp->set_share_balance(my_shareB);
-				p_temp->set_acb_per_share(my_acbPshare);
+				p_temp->set_acb_per_share(my_acbS);
 
 				//CGL set
 				my_cgl = ( p_temp->get_amount() - ( p_temp->get_shares() * prev_acbS ));
@@ -341,16 +286,10 @@ double History::compute_cgl(unsigned int year) {
 	Transaction * p_temp {p_head};
 	double prev_acbS = 0, my_cgl = 0;
 
-	//NOT p_temp->get_next() because then it would stop one short
 	while (p_temp != nullptr) {
 
-		//if its sell type, and if its part of our year
+		// Only summed if transaction is a Sell type, in our year.
 		if ((p_temp->get_trans_type() == false) and (p_temp->get_year() == year)) {
-
-
-		//	std::cout << "amount " << p_temp->get_amount() << " previous "<< prev_acbS << " shares " << p_temp->get_shares() << std::endl;
-		//	std::cout << "mycgl " << my_cgl << std::endl;
-		//	std::cout << "previous * shares =" << ( p_temp->get_shares() * prev_acbS) << std::endl;
 
 			my_cgl += ( p_temp->get_amount() - ( p_temp->get_shares() * prev_acbS) );
 
@@ -372,7 +311,6 @@ void History::print() {
 	//NOT p_temp->get_next() because then it would stop one short
 	while (p_temp != nullptr) {
 		p_temp->print();
-		//std::cout << "go next man " << std::endl;
 		p_temp = p_temp->get_next();
 	}
 	std::cout << "========== END TRANSACTION HISTORY ============" << std::endl;

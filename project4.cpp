@@ -35,12 +35,6 @@ std::string buysell{};
 unsigned int shares{};
 double amount{};
 
-
-////////////////////
-// File functions //
-////////////////////
-
-// Open the file for reading
 void open_file() {
   // If the file is already open, close it
   //  - this is just in case the file changed since the last opening
@@ -94,4 +88,4 @@ double get_trans_amount() { return amount; }
 
 bool get_trans_type() { return (buysell == "Buy") ? true : false; }
 
-};  // namespace ece150
+};
