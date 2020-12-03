@@ -1,18 +1,20 @@
-#ifndef _HISTORY_TRANSACTION_CPP_
-#define _HISTORY_TRANSACTION_CPP_
+#ifndef _HISTORY_TRADE_CPP_
+#define _HISTORY_TRADE_CPP_
 
 #include <cassert>
 #include <iomanip>
 #include <iostream>
 
-#include "project4.hpp"
+#include "corehelper.hpp"
 #include "History.hpp"
-#include "Transaction.hpp"
+#include "Trades.hpp"
 
-// DEFINITIONS FOR TRANSACTION CLASS
+// DEFINITIONS FOR TRADE CLASS
 
 // Constructor
-Transaction::Transaction( std::string ticker_symbol,  unsigned int day_date,
+// While "this" was not needed, I am told it is good practice to be explicit!
+
+Trade::Trade( std::string ticker_symbol,  unsigned int day_date,
         unsigned int month_date,  unsigned year_date,
         bool buy_sell_trans,  unsigned int number_shares,
         double trans_amount ) {
@@ -24,10 +26,10 @@ Transaction::Transaction( std::string ticker_symbol,  unsigned int day_date,
 	this->shares = number_shares;
 	this->amount = trans_amount;
 
-	acb = 0;
-	acb_per_share = 0;
-	share_balance = 0;
-	cgl = 0;
+	this->acb = 0;
+	this->acb_per_share = 0;
+	this->share_balance = 0;
+	this->cgl = 0;
 
 	if (buy_sell_trans == true) {
 		trans_type = "Buy";
@@ -42,13 +44,13 @@ Transaction::Transaction( std::string ticker_symbol,  unsigned int day_date,
 	p_next = nullptr;
 }
 
-// Destructor
-Transaction::~Transaction() {
+// Destructor: this could have just not been defined as the default
+Trade::~Trade() {
 
 }
 
-// Overloaded < operator.
-bool Transaction::operator<( Transaction const &other ) {
+// Overloaded < operator to check if a date is earlier than another
+bool Trade::operator<( Trade const &other ) {
 	if (year < other.year ) {
 		return true;
 	}
@@ -62,29 +64,29 @@ bool Transaction::operator<( Transaction const &other ) {
 }
 
 // Member functions to get values.
-std::string Transaction::get_symbol() const { return symbol; }
-unsigned int Transaction::get_day() const { return day; }
-unsigned int Transaction::get_month() const { return month; }
-unsigned int Transaction::get_year() const { return year; }
-unsigned int Transaction::get_shares() const { return shares; }
-double Transaction::get_amount() const { return amount; }
-double Transaction::get_acb() const { return acb; }
-double Transaction::get_acb_per_share() const { return acb_per_share; }
-unsigned int Transaction::get_share_balance() const { return share_balance; }
-double Transaction::get_cgl() const { return cgl; }
-bool Transaction::get_trans_type() const { return (trans_type == "Buy") ? true: false ; }
-unsigned int Transaction::get_trans_id() const { return trans_id; }
-Transaction *Transaction::get_next() { return p_next; }
+std::string Trade::get_symbol() const { return symbol; }
+unsigned int Trade::get_day() const { return day; }
+unsigned int Trade::get_month() const { return month; }
+unsigned int Trade::get_year() const { return year; }
+unsigned int Trade::get_shares() const { return shares; }
+double Trade::get_amount() const { return amount; }
+double Trade::get_acb() const { return acb; }
+double Trade::get_acb_per_share() const { return acb_per_share; }
+unsigned int Trade::get_share_balance() const { return share_balance; }
+double Trade::get_cgl() const { return cgl; }
+bool Trade::get_trans_type() const { return (trans_type == "Buy") ? true: false ; }
+unsigned int Trade::get_trans_id() const { return trans_id; }
+Trade *Trade::get_next() { return p_next; }
 
 // Member functions to set values.
-void Transaction::set_acb( double acb_value ) { acb = acb_value; }
-void Transaction::set_acb_per_share( double acb_share_value ) { acb_per_share = acb_share_value; }
-void Transaction::set_share_balance( unsigned int bal ) { share_balance = bal ; }
-void Transaction::set_cgl( double value ) { cgl = value; }
-void Transaction::set_next( Transaction *p_new_next ) { p_next = p_new_next; }
+void Trade::set_acb( double acb_value ) { acb = acb_value; }
+void Trade::set_acb_per_share( double acb_share_value ) { acb_per_share = acb_share_value; }
+void Trade::set_share_balance( unsigned int bal ) { share_balance = bal ; }
+void Trade::set_cgl( double value ) { cgl = value; }
+void Trade::set_next( Trade *p_new_next ) { p_next = p_new_next; }
 
-// Print the transaction.
-void Transaction::print() {
+// Print the table of trades
+void Trade::print() {
   std::cout << std::fixed << std::setprecision(2);
   std::cout << std::setw(4) << get_trans_id() << " "
     << std::setw(4) << get_symbol() << " "
@@ -113,10 +115,9 @@ History::History() {
 }
 
 // Destructor
-
 History::~History()
 {
-    Transaction *p_temp = nullptr;
+    Trade *p_temp = nullptr;
 
     while(p_head != nullptr && p_head->get_next() != nullptr)
     {
@@ -130,35 +131,34 @@ History::~History()
     p_head = nullptr;
 }
 
-// read_transaction(...): Read the transaction history from file.
-
+// Read the trade history from file.
 void History::read_history() {
 
-	ece150::open_file();
+	core::open_file();
 
-	while (ece150::next_trans_entry()) {
-		Transaction * p_new = new Transaction (
+	while (core::next_trans_entry()) {
+		Trade * p_new = new Trade (
 
-			ece150::get_trans_symbol(),
-			ece150::get_trans_day(),
-			ece150::get_trans_month(),
-			ece150::get_trans_year(),
-			ece150::get_trans_type(),
-			ece150::get_trans_shares(),
-			ece150::get_trans_amount()
+			core::get_trans_symbol(),
+			core::get_trans_day(),
+			core::get_trans_month(),
+			core::get_trans_year(),
+			core::get_trans_type(),
+			core::get_trans_shares(),
+			core::get_trans_amount()
 
 		);
 
 		this->insert(p_new);
 	}
 
-	ece150::close_file();
+	core::close_file();
 
 }
 
 
-// insert(...): Insert transaction into linked list.
-void History::insert(Transaction *p_new_trans) {
+// Insert trade into linked list.
+void History::insert(Trade *p_new_trans) {
 
 	if (p_head == nullptr) {
 		//Empty case
@@ -166,7 +166,7 @@ void History::insert(Transaction *p_new_trans) {
 	}
 	else {
 		//General case
-		Transaction * p_traverse {p_head};
+		Trade * p_traverse {p_head};
 
 		while (p_traverse->get_next() != nullptr) {
 				p_traverse = p_traverse->get_next();
@@ -177,7 +177,9 @@ void History::insert(Transaction *p_new_trans) {
 	}
 }
 
-// sort_by_date(): Sort the linked list by trade date. Inefficient but simple sort method.
+// sort_by_date(): Sort the linked list by trade date using insert sort. Inefficient but simple sort method.
+// I've also tried binary search and bubble sort methods for fun, but only insert sort is shown here.
+// To fully understand the pointer and linked list logic, there is a bit of inefficiency in the code I'll revisit one day.
 
 void History::sort_by_date() {
 
@@ -187,9 +189,9 @@ void History::sort_by_date() {
 	else {
 
 		// Create handling pointers:
-		Transaction * p_sorted {nullptr};
-		Transaction * p_temp2 {nullptr};
-		Transaction * p_temp1 {p_head};
+		Trade * p_sorted {nullptr};
+		Trade * p_temp2 {nullptr};
+		Trade * p_temp1 {p_head};
 
 		// 1a. Move p_head to the second node
 		p_head = p_head->get_next();
@@ -200,7 +202,7 @@ void History::sort_by_date() {
 		// 1c. Point p_sorted to first node
 		p_sorted = p_temp1;
 
-	// Main loop for general case
+		// Main loop for general case
 		while (p_head != nullptr) {
 
 			// 2a: Break off the next node.
@@ -238,11 +240,10 @@ void History::sort_by_date() {
 }
 
 
-// update_acb_cgl(): Updates the ACB, Share, ACB/Share, and CGL values.
-
+// Updates the ACB, Share, ACB/Share, and CGL values.
 void History::update_acb_cgl() {
 
-		Transaction * p_temp {p_head};
+		Trade * p_temp {p_head};
 		double my_acb = 0, my_acbS = 0, my_shareB = 0, my_cgl = 0, prev_acbS = 0;
 
 		while (p_temp != nullptr) {
@@ -280,15 +281,17 @@ void History::update_acb_cgl() {
 }
 
 
-// compute_cgl(): Compute a yearly CGL.
+// Compute a yearly CGL (same as the single CGL's calculated above but over a year)
+// Could probably have made it another helper function
+
 double History::compute_cgl(unsigned int year) {
 
-	Transaction * p_temp {p_head};
+	Trade * p_temp {p_head};
 	double prev_acbS = 0, my_cgl = 0;
 
 	while (p_temp != nullptr) {
 
-		// Only summed if transaction is a Sell type, in our year.
+		// Only summed if trade is a Sell type, in our year.
 		if ((p_temp->get_trans_type() == false) and (p_temp->get_year() == year)) {
 
 			my_cgl += ( p_temp->get_amount() - ( p_temp->get_shares() * prev_acbS) );
@@ -302,23 +305,22 @@ double History::compute_cgl(unsigned int year) {
 	return my_cgl;
 }
 
-// print() Print the transaction history.
-
+// Setup to print the trade history.
 void History::print() {
 
-	Transaction * p_temp {p_head};
-	std::cout << "========== BEGIN TRANSACTION HISTORY ============" << std::endl;
-	//NOT p_temp->get_next() because then it would stop one short
+	Trade * p_temp {p_head};
+	std::cout << "========== BEGIN TRADE HISTORY ============" << std::endl;
+	// NOT p_temp->get_next() because then it would stop one short
 	while (p_temp != nullptr) {
 		p_temp->print();
 		p_temp = p_temp->get_next();
 	}
-	std::cout << "========== END TRANSACTION HISTORY ============" << std::endl;
+	std::cout << "========== END TRADE HISTORY ============" << std::endl;
 }
 
 
-// get_p_head(): Full access to the linked list.
-Transaction *History::get_p_head() { return p_head; }
+// Full access to the linked list, starting at p_head
+Trade *History::get_p_head() { return p_head; }
 
 
 #endif

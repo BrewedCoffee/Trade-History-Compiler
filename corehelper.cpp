@@ -1,10 +1,3 @@
-////////////////////////////////////
-// ECE 150: Project 4
-//
-// Authors: Douglas Harder
-//          Hiren Patel
-////////////////////////////////////
-
 #include <cassert>
 #include <fstream>
 #include <iomanip>
@@ -13,9 +6,9 @@
 #include <string>
 #include <vector>
 
-#include "project4.hpp"
+#include "corehelper.hpp"
 
-namespace ece150 {
+namespace core {
 // File and string parsing
 std::ifstream file{};
 std::string content{};
@@ -30,24 +23,24 @@ unsigned int day{};
 unsigned int month{};
 unsigned int year{};
 
-// Transaction type, shares and amount.
+// Trade type, shares and amount.
 std::string buysell{};
 unsigned int shares{};
 double amount{};
 
 void open_file() {
   // If the file is already open, close it
-  //  - this is just in case the file changed since the last opening
+  // This is just in case the file changed since the last opening
   if (file.is_open()) {
     file.close();
   }
 
-  // Open the file and set the character position to zero
-  file.open("transaction_history.txt");
+  // Open file, set the character position to zero
+  file.open("trade_history.txt");
 
-  // If the file did not open, indicate an error occurred.
+  // If file did not open, indicate error
   if (!file.is_open()) {
-    std::cerr << "[ERROR]: transaction_history.txt not found" << std::endl;
+    std::cerr << "[ERROR]: trade_history.txt not found. Check that the file is present and named correctly." << std::endl;
   }
 
   // Assign to the string the 'content' the contents of the file
@@ -59,7 +52,7 @@ void open_file() {
 
 void close_file() { file.close(); }
 
-// Moves to the next transaction entry.
+// Moves to the next trade entry.
 bool next_trans_entry() {
   std::getline(input, current_entry);
   std::stringstream ss(current_entry);

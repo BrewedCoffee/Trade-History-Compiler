@@ -1,5 +1,5 @@
-#ifndef _PROJECT4_HPP_
-#define _PROJECT4_HPP_
+#ifndef _COREHELPER_HPP_
+#define _COREHELPER_HPP_
 
 #include <cassert>
 #include <fstream>
@@ -9,14 +9,12 @@
 #include <string>
 #include <vector>
 
-namespace ece150 {
+namespace core {
 // File and string parsing
 extern std::ifstream file;
 extern std::string content;
 extern std::istringstream input;
 extern std::string current_entry;
-
-//oi this is a big important comment
 
 // Ticker symbol.
 extern std::string symbol;
@@ -26,21 +24,19 @@ extern unsigned int day;
 extern unsigned int month;
 extern unsigned int year;
 
-// Transaction type, shares and amount.
+// Trade type, shares and amount.
 extern std::string buysell;
 extern unsigned int shares;
 extern double amount;
 
-////////////////////
-// File functions //
-////////////////////
+// FUNCTIONS FOR FILE
 
 // Open the file for reading
 void open_file();
 
 void close_file();
 
-// Moves to the next transaction entry.
+// Moves to the next trade entry.
 bool next_trans_entry();
 
 // Functions to access the parsed fields.
@@ -58,6 +54,6 @@ double get_trans_amount();
 
 bool get_trans_type();
 
-};  // namespace ece150
+};  // namespace core
 
 #endif

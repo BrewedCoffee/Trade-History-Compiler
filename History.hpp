@@ -5,46 +5,38 @@
 #include <iostream>
 #include <string>
 
-#include "Transaction.hpp"
+#include "Trades.hpp"
 
 class History {
 public:
 	// Constructor
-	//
 	History();
 
 	// Destructor.
-	//
 	~History();
 
-	// Read the transaction history from file.
-	//
+	// Read the trade history from file.
 	void read_history();
 
-	// Insert transaction in linked list.
-	//
-	void insert(Transaction *p_new_trans);
+	// Insert trade in linked list.
+	void insert(Trade *p_new_trans);
 
 	// Sort using insertion sort.
-	//
 	void sort_by_date();
 
-	// Update the acb members in the linked list.
-	//
+	// Update the ACB members in the linked list.
 	void update_acb_cgl();
 
 	// Compute the ACB, and CGL.
-	//
 	double compute_cgl(unsigned int year);
 
-	// Print the transaction history.
-	//
+	// Print the trade history.
 	void print();
 
-	Transaction *get_p_head();
+	Trade *get_p_head();
 
 private:
-	Transaction *p_head;
+	Trade *p_head;
 };
 
 #endif
