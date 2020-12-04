@@ -10,4 +10,4 @@ It can be a handy tool for tax purposes: or just to see how you're doing. Or how
      
 In order to change the time period for CGL calculation, refer to main.cpp.  
 The text file should be named trade_history.txt to be recognized.  
-Note that the text file can only be of one trade as of now. Maybe I'll improve that in the future.
+Note that the text file can only contain trades of a single ticker. Maybe I'll improve that in the future.
