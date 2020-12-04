@@ -2,7 +2,7 @@
 by BrewedCoffee
 
 This is a nifty compiler that sorts and calculates capital gains/losses from a text file of trades.  
-It can be a handy tool for tax purposes: or just to see how you're doing. Or how much you're losing 😢  on Intel calls.  
+It can be a handy tool for tax purposes- or just to see how much you've making. Or how much you're losing 😢  on Intel calls.  
 
 <img src="tradehistorylogo.png"
      alt="Trade History Icon"
