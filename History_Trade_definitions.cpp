@@ -239,6 +239,41 @@ void History::sort_by_date() {
 	}
 }
 
+/*
+Merge Sort Exploration:
+
+void History::sort_by_date(Trade ** p_head) {
+
+	struct Trade * p_temp1{nullptr};
+	struct Trade * p_temp2{nullptr};
+
+	// Empty case: list is empty or contains one node
+	if ((p_head == nullptr) || (p_head->get_next() == nullptr)) {
+		return;
+	}
+
+	// Split list into two sublists
+	split(p_head, &p_temp1, &p_temp2);
+
+	// Recursive sorting of sublists (new halves)
+	sort_by_date(&p_temp1);
+	mergeSort(&p_temp2);
+
+	// Merge two lists together
+	p_head = sortedMerge(p_temp1, p_temp2)
+
+	// INCOMPLETE: Split helper function.
+
+	//
+
+	// INCOMPLETE: Insert node at beginning of linked list. Push helper function.
+	struct Trade * p_new = (struct Trade *)
+
+
+
+
+ */
+
 
 // Updates the ACB, Share, ACB/Share, and CGL values.
 void History::update_acb_cgl() {
